@@ -1,5 +1,7 @@
-package com.wasilewskyy.github_proxy;
+package com.wasilewskyy.github_proxy.controller;
 
+import com.wasilewskyy.github_proxy.client.GithubClient;
+import com.wasilewskyy.github_proxy.model.GithubRepositoryResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
