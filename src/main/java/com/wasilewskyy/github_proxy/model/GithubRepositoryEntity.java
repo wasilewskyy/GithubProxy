@@ -1,23 +1,24 @@
 package com.wasilewskyy.github_proxy.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class GithubRepositoryResponse {
+@AllArgsConstructor
+@Entity
+@Table(name = "githubrepoentity")
+public class GithubRepositoryEntity {
 
-    @JsonProperty("full_name")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String fullName;
     private String description;
-    @JsonProperty("clone_url")
     private String cloneUrl;
-    @JsonProperty("stargazers_count")
     private int stars;
-    @JsonProperty("created_at")
     private String createdAt;
-
 }

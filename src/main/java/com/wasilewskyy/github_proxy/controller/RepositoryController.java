@@ -1,20 +1,21 @@
 package com.wasilewskyy.github_proxy.controller;
 
 import com.wasilewskyy.github_proxy.client.GithubClient;
+import com.wasilewskyy.github_proxy.model.GithubRepositoryEntity;
 import com.wasilewskyy.github_proxy.model.GithubRepositoryResponse;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.wasilewskyy.github_proxy.service.GithubRepositoryService;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/repositories")
 public class RepositoryController {
 
     private final GithubClient githubClient;
+    private final GithubRepositoryService githubService;
 
-    public RepositoryController(GithubClient githubClient) {
+    public RepositoryController(GithubClient githubClient, GithubRepositoryService githubService) {
         this.githubClient = githubClient;
+        this.githubService = githubService;
     }
 
     @GetMapping("/{owner}/{repository}")
