@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: KUBA
+      changes:
+        - createTable:
+            tableName: GITHUB_REPOSITORY
+            columns:
+              - column:
+                  name: ID
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: FULL_NAME
+                  type: varchar(255)
+              - column:
+                  name: DESCRIPTION
+                  type: varchar(255)
+              - column:
+                  name: CLONE_URL
+                  type: varchar(255)
+              - column:
+                  name: STARS
+                  type: BIGINT
+              - column:
+                  name: CREATED_AT
+                  type: varchar(255)

@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "githubrepoentity")
-public class GithubRepositoryEntity {
+@Table(name = "repositories")
+public class GithubRepository {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
