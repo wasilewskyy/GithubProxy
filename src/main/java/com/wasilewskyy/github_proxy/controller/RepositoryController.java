@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/repositories")
 @RequiredArgsConstructor
@@ -24,16 +22,6 @@ public class RepositoryController {
     @ResponseStatus(HttpStatus.CREATED)
     public GithubRepositoryDTO createRepository(@PathVariable String owner, @PathVariable("repository-name") String repositoryName) {
         return repositoryService.createRepository(owner, repositoryName);
-    }
-
-    @GetMapping("/local/{owner}/{repository-name}")
-    public GithubRepositoryDTO getLocalRepository(@PathVariable String owner, @PathVariable("repository-name") String repositoryName) {
-        return repositoryService.getRepository(owner, repositoryName);
-    }
-
-    @GetMapping("/local/repositories")
-    public List<GithubRepositoryDTO> getAllLocalRepositories() {
-        return repositoryService.getAllRepositories();
     }
 
     @PutMapping("/{owner}/{repository-name}")

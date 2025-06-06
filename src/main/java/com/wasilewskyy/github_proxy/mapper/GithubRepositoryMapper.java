@@ -13,4 +13,6 @@ public interface GithubRepositoryMapper {
     GithubRepositoryDTO toDto(GithubRepository entity);
 
     GithubRepositoryDTO fromGithubResponse(GithubRepositoryResponse githubResponse);
+
+    GithubRepository fromGithubResponseToEntity(GithubRepositoryResponse githubResponse);
 }

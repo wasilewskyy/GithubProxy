@@ -2,6 +2,7 @@ package com.wasilewskyy.github_proxy.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "repositories")
 public class GithubRepository {
 
@@ -21,4 +23,8 @@ public class GithubRepository {
     private String cloneUrl;
     private int stars;
     private String createdAt;
+
+    public static String getFullName(String owner, String repositoryName) {
+        return owner + "/" + repositoryName;
+    }
 }

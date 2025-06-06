@@ -36,10 +36,9 @@ public class GithubRepositoryService {
     }
 
     public GithubRepositoryDTO createRepository(String owner, String repositoryName) {
-        String fullName = owner + "/" + repositoryName;
 
-        if (repositoryJPA.existsByFullName(fullName)) {
-            throw new IllegalArgumentException("Repository already exists: " + fullName);
+        if (!repositoryJPA.existsByFullName(GithubRepository.getFullName(owner, repositoryName))) {
+            throw new RepositoryNotFoundException("Repository already exists: " + GithubRepository.getFullName(owner, repositoryName));
         }
 
         GithubRepositoryResponse gitHubApiResponse;
@@ -49,26 +48,17 @@ public class GithubRepositoryService {
             throw new RepositoryNotFoundException("Requested repository could not be found.");
         }
 
-        GithubRepositoryDTO dto = githubRepositoryMapper.fromGithubResponse(gitHubApiResponse);
-        GithubRepository entity = githubRepositoryMapper.toEntity(dto);
+        GithubRepository entity = githubRepositoryMapper.fromGithubResponseToEntity(gitHubApiResponse);
         GithubRepository savedEntity = repositoryJPA.save(entity);
 
         return githubRepositoryMapper.toDto(savedEntity);
     }
 
     @Transactional
-    public List<GithubRepositoryDTO> getAllRepositories() {
-        return repositoryJPA.findAll().stream()
-                .map(githubRepositoryMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
     public GithubRepositoryDTO getRepository(String owner, String repositoryName) {
-        String fullName = owner + "/" + repositoryName;
 
         GithubRepository entity = repositoryJPA.findAll().stream()
-                .filter(repo -> repo.getFullName().equals(fullName))
+                .filter(repo -> repo.getFullName().equals(GithubRepository.getFullName(owner, repositoryName)))
                 .findFirst()
                 .orElseThrow(() -> new RepositoryNotFoundException("Requested repository could not be found."));
 
@@ -76,9 +66,8 @@ public class GithubRepositoryService {
     }
 
     public GithubRepositoryDTO updateRepository(String owner, String repositoryName) {
-        String fullName = owner + "/" + repositoryName;
 
-        if (!repositoryJPA.existsByFullName(fullName)) {
+        if (!repositoryJPA.existsByFullName(GithubRepository.getFullName(owner, repositoryName))) {
             throw new RepositoryNotFoundException("Requested repository could not be found.");
         }
 
@@ -90,7 +79,7 @@ public class GithubRepositoryService {
         }
 
         GithubRepository existingEntity = repositoryJPA.findAll().stream()
-                .filter(repo -> repo.getFullName().equals(fullName))
+                .filter(repo -> repo.getFullName().equals(GithubRepository.getFullName(owner, repositoryName)))
                 .findFirst()
                 .orElseThrow(() -> new RepositoryNotFoundException("Requested repository could not be found."));
 
@@ -104,10 +93,9 @@ public class GithubRepositoryService {
     }
 
     public void deleteRepository(String owner, String repositoryName) {
-        String fullName = owner + "/" + repositoryName;
 
         GithubRepository entity = repositoryJPA.findAll().stream()
-                .filter(repo -> repo.getFullName().equals(fullName))
+                .filter(repo -> repo.getFullName().equals(GithubRepository.getFullName(owner, repositoryName)))
                 .findFirst()
                 .orElseThrow(() -> new RepositoryNotFoundException("Requested repository could not be found."));
 
