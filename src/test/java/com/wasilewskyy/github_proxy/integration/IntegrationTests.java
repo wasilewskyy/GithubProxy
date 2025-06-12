@@ -4,10 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.wasilewskyy.github_proxy.client.GithubClient;
 import com.wasilewskyy.github_proxy.model.GithubRepository;
 import com.wasilewskyy.github_proxy.model.GithubRepositoryDTO;
 import com.wasilewskyy.github_proxy.repository.GithubRepositoryJPA;
+import feign.Client;
+import feign.RetryableException;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +22,10 @@ import org.springframework.http.*;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.client.RestTemplate;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -43,6 +49,9 @@ public class IntegrationTests {
     @LocalServerPort
     int appPort;
 
+    @Autowired
+    private GithubClient client;
+
     @BeforeEach
     void setUp() {
         wireMockServer.start();
@@ -51,6 +60,25 @@ public class IntegrationTests {
     @AfterEach
     void shutDown() {
         wireMockServer.shutdown();
+    }
+
+    @Test
+    void getRepository_ShouldRetry3Times_shouldReturnErrorResponse() throws JsonProcessingException {
+        String owner = "wasilewskyy";
+        String repositoryName = "medical-clinic";
+
+        wireMockServer.stubFor(WireMock.get(WireMock.urlPathEqualTo("/repos/wasilewskyy/medical-clinic"))
+                .willReturn(WireMock.aResponse()
+                        .withStatus(500)
+                        .withHeader(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                ));
+
+        String url = String.format("http://localhost:%s/repositories/%s/%s", appPort, owner, repositoryName);
+        ResponseEntity<GithubRepositoryDTO> response = restTemplate.getForEntity(url, GithubRepositoryDTO.class);
+
+        Assertions.assertThrows(RetryableException.class, () -> client.getRepository(owner, repositoryName));
+
+        verify(3, getRequestedFor(urlPathEqualTo("/repos/wasilewskyy/medical-clinic")));
     }
 
     @Test

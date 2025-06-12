@@ -7,6 +7,8 @@ import feign.codec.ErrorDecoder;
 
 public class FeignErrorDecoder implements ErrorDecoder {
 
+    ErrorDecoder defaultErrorDecoder = new ErrorDecoder.Default();
+
     @Override
     public Exception decode(String methodKey, Response response) {
         FeignException exception = FeignException.errorStatus(methodKey, response);
@@ -20,6 +22,6 @@ public class FeignErrorDecoder implements ErrorDecoder {
                     50L,
                     response.request());
         }
-        return exception;
+        return defaultErrorDecoder.decode(methodKey, response);
     }
 }
